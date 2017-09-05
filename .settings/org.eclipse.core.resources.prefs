@@ -1,0 +1,16 @@
+eclipse.preferences.version=1
+encoding//WebRoot/WEB-INF/jsp/regist.jsp=UTF-8
+encoding//src/com/codeagles/shop/adminUser/action/AdminUserAction.java=GBK
+encoding//src/com/codeagles/shop/adminUser/dao/AdminUserDao.java=GBK
+encoding//src/com/codeagles/shop/adminUser/service/AdminUserService.java=GBK
+encoding//src/com/codeagles/shop/adminUser/vo/AdminUser.java=GBK
+encoding//src/com/codeagles/shop/cart/action/CartAction.java=GBK
+encoding//src/com/codeagles/shop/intercepter/LoginIntercepter.java=GBK
+encoding//src/com/codeagles/shop/orders/action/OrderAction.java=GBK
+encoding//src/com/codeagles/shop/product/vo/Product.java=GBK
+encoding//src/com/codeagles/shop/user/action/UserAction.java=GBK
+encoding//src/com/codeagles/util/MailUitls.java=UTF-8
+encoding//src/com/codeagles/util/PageHibernateCallback.java=UTF-8
+encoding//src/jdbc.properties=UTF-8
+encoding//src/log4j.properties=UTF-8
+encoding/<project>=UTF-8

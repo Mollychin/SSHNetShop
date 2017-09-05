@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 配置连接池: -->
+	<!-- 引入外部属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	<!-- 配置C3P0连接池: -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- Hibernate的相关信息 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 配置Hibernate的其他的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.connection.autocommit">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<!-- 配置Hibernate的映射文件 -->
+		<property name="mappingResources">
+			<list>
+				<value>com/codeagles/shop/user/vo/User.hbm.xml</value>
+				<value>com/codeagles/shop/category/vo/Category.hbm.xml</value>
+				<value>com/codeagles/shop/categorysecond/vo/CategorySecond.hbm.xml
+				</value>
+				<value>com/codeagles/shop/product/vo/Product.hbm.xml</value>
+				<value>com/codeagles/shop/orders/vo/Order.hbm.xml</value>
+				<value>com/codeagles/shop/orders/vo/OrderItem.hbm.xml</value>
+				<value>com/codeagles/shop/adminUser/vo/AdminUser.hbm.xml</value>
+
+			</list>
+		</property>
+	</bean>
+
+	<!-- 事务管理: -->
+	<!-- 事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- 注解事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- Action的配置 =========================== -->
+
+	<!-- 首页访问的Action -->
+	<bean id="indexAction" class="com.codeagles.shop.index.action.IndexAction"
+		scope="prototype">
+		<property name="categoryService" ref="categoryService" />
+		<property name="productService" ref="productService" />
+	</bean>
+	<!-- 用户Action -->
+	<bean id="userAction" class="com.codeagles.shop.user.action.UserAction"
+		scope="prototype">
+		<property name="userService" ref="userService" />
+	</bean>
+	<!-- 商品模块的Action -->
+	<bean id="productAction" class="com.codeagles.shop.product.action.ProductAction"
+		scope="prototype">
+		<property name="productService" ref="productService" />
+	</bean>
+	<!-- 配置验证码的Action -->
+	<bean id="checkImgAction" class="com.codeagles.shop.user.action.CheckImgAction"
+		scope="prototype">
+	</bean>
+	<!-- 购物车的Action -->
+	<bean id="cartAction" class="com.codeagles.shop.cart.action.CartAction"
+		scope="prototype">
+		<property name="productService" ref="productService" />
+	</bean>
+	<!-- 订单的Action -->
+	<bean id="orderAction" class="com.codeagles.shop.orders.action.OrderAction"
+		scope="prototype">
+		<property name="orderServie" ref="orderService"></property>
+	</bean>
+	<!-- 后台登录的Action -->
+	<bean id="adminUserAction" class="com.codeagles.shop.adminUser.action.AdminUserAction" scope="prototype">
+		<property name="adminUserService" ref="adminUserService"></property>
+	</bean>
+	<!-- 后台一届分类的Action -->
+	<bean id="adminCategoryAction" class="com.codeagles.shop.category.adminaction.AdminCategoryAction">
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+	<!-- 二级分类的Action -->
+	<bean id="adminCategorySecondAction" class="com.codeagles.shop.categorysecond.adminaction.AdminCategorySecondAction">
+		<property name="categorySecondService" ref="categorySecondService"/>
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+	<bean id="adminProductAction" class="com.codeagles.shop.product.adminproduct.AdminProductAction" scope="prototype">
+	<property name="productService" ref="productService"></property>
+	<property name="categorySecondService" ref="categorySecondService"/>
+	</bean>
+	<!--  后台订单管理-->
+	<bean id="adminOrderAction" class="com.codeagles.shop.orders.adminaction.AdminOrderAction" scope="prototype">
+		<property name="orderService" ref="orderService"></property>
+	</bean>
+	<!-- Service配置=================== -->
+	<bean name="userService" class="com.codeagles.shop.user.service.UserService">
+		<property name="userDao" ref="userDao" />
+	</bean>
+
+	<bean id="categoryService" class="com.codeagles.shop.category.service.CategoryService">
+		<property name="categoryDao" ref="categoryDao" />
+	</bean>
+
+	<bean id="productService" class="com.codeagles.shop.product.service.ProductService">
+		<property name="productDao" ref="productDao" />
+	</bean>
+
+	<bean id="orderService" class="com.codeagles.shop.orders.service.OrderService">
+		<property name="orderDao" ref="orderDao"></property>
+	</bean>
+
+	<bean id="adminUserService" class="com.codeagles.shop.adminUser.service.AdminUserService">
+		<property name="adminUserDao" ref="adminUserDao"></property>
+	</bean>
+	<bean id="categorySecondService" class="com.codeagles.shop.categorysecond.service.CategorySecondService">
+			<property name="categorySecondDao" ref="categorySecondDao"></property>
+	</bean>
+	<!-- Dao配置=-==================== -->
+	<bean id="userDao" class="com.codeagles.shop.user.dao.UserDao">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="categoryDao" class="com.codeagles.shop.category.dao.CategoryDao">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="productDao" class="com.codeagles.shop.product.dao.ProductDao">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="orderDao" class="com.codeagles.shop.orders.dao.OrderDao">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="adminUserDao" class="com.codeagles.shop.adminUser.dao.AdminUserDao">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="categorySecondDao" class="com.codeagles.shop.categorysecond.dao.CategorySecondDao">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+		</bean>
+	<aop:config proxy-target-class="true" />
+</beans>
